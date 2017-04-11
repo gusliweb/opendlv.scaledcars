@@ -115,7 +115,7 @@ ENDIF(CXXTEST_FOUND)
 
 ###############################################################################
 # Install this project.
-INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin COMPONENT scaledcars-software)
+INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin/miniature COMPONENT scaledcars-software)
 INSTALL(TARGETS ${PROJECT_NAME}-static DESTINATION lib COMPONENT scaledcars-software)
 INSTALL(FILES man/${PROJECT_NAME}.1 DESTINATION man/man1 COMPONENT scaledcars-software)
 

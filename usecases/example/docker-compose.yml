@@ -33,5 +33,5 @@ services:
         network_mode: "host"
         depends_on:
             - odsupercomponent
-        command: "/opt/opendlv.scaledcars/bin/scaledcars-control-example --cid=211 --freq=10"
+        command: "/opt/opendlv.scaledcars/bin/miniature/scaledcars-control-example --cid=211 --freq=10"
 
