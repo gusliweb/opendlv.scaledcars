@@ -14,14 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 version: '2'
 
 services:
-     # Micro-service for odsupercomponent.
+    # Micro-service for odsupercomponent.
     odsupercomponent:
         build: .
         network_mode: host
-        ipc : host
         volumes:
             - ./DIT-168:/opt/config
         command: "/opt/od4/bin/odsupercomponent --cid=${CID} --configuration=/opt/config/configuration"
@@ -31,42 +31,51 @@ services:
     odsimvehicle:
         build: .
         network_mode: host
-        ipc : host
         depends_on:
             - odsupercomponent
         logging: 
             driver: "none"
-        command: "/opt/od4/bin/odsimvehicle --cid=${CID} --freq=20"
+        command: "/opt/od4/bin/odsimvehicle --cid=${CID} --freq=10"
 
 
-    #Micro-service for odsimcamera
-    odsimcamera:
+    # Micro-service for odsimirus.
+    odsimirus:
         build: .
+        depends_on:
+            - odsupercomponent
         network_mode: host
-        ipc: host
+        logging: 
+            driver: "none"
+        volumes:
+            - ./DIT-168:/opt/config
+        command: "/opt/od4/bin/odsimirus --cid=${CID} --freq=10 --configuration=/opt/config/configuration"
+    #Micro service for odcockpit
+    odcockpit:
+        build: .
+        network_mode: "host"
         environment:
         - DISPLAY=$DISPLAY
         volumes:
         - ./DIT-168:/opt/config
         - /tmp/.X11-unix:/tmp/.X11-unix
-        - /dev/shm:/dev/shm 
+        - ~/CsvData/Parking:/opt/Datacsv
+        ipc: host
+        user: odv
         depends_on:
             - odsupercomponent
-            - odsimvehicle
-        command: "/opt/od4/bin/odsimcamera --cid=${CID} --rm=true --privileged=true --freq=10 --configuration=/opt/config/configuration"
-   #Micro-service for lanedtecter scenario.
-    lanedetector:
+        command: "/opt/od4/bin/odcockpit --cid=${CID} --configuration=/opt/config/configuration "
+   # Micro-service for boxparker scenario.
+    sidewaysparker:
         build: .
         network_mode: host
-        ipc: host
-        environment:
-        - DISPLAY=$DISPLAY
-        volumes:
-        - ./DIT-168:/opt/config
         depends_on:
             - odsupercomponent
             - odsimvehicle
-            - odsimcamera
-        command: bash -c "sleep 5; /opt/opendlv.scaledcars/bin/miniature/lanefollower --verbose=1  --cid=${CID} --freq=20 -e DISPLAY=$DISPLAY"
+            - odcockpit
+            - odsimirus
+        command: bash -c "sleep 5; /opt/opendlv.scaledcars/bin/miniature/sidewaysparker --rm --verbose=1 --cid=${CID} --freq=10"
 
+
+    
+    
 

@@ -14,7 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
+        #- environment
+        #- DISPLAY=$DISPLAY
 version: '2'
 
 services:
@@ -22,44 +23,39 @@ services:
     odsupercomponent:
         build: .
         network_mode: host
+        ipc: host
         volumes:
             - .:/opt/opendlv.core.configuration
-        command: "/opt/od4/bin/odsupercomponent --cid=${CID} --verbose=1 --configuration=/opt/opendlv.core.configuration/configuration"
+        command: "/opt/od4/bin/odsupercomponent --cid=${CID} --verbose=1 --configuration=/opt/opendlv.core.configuration/configuration --freq=20"
 
-
-    # Micro-service for proxy-camera.
-    proxy-camera:
+   # Micro-service for proxy scenario.
+    proxy:
         build: .
+        network_mode: host
+        ipc: host
+        user: odv
         group_add:
             - video
-        depends_on:
-            - odsupercomponent
+        environment:
+        - DISPLAY=$DISPLAY
         devices:
-            - "/dev/video0:/dev/video0"
-        user: odv
-        network_mode: host
-        ipc: host
-        command: "/opt/opendlv.core/bin/opendlv-core-system-proxy-camera --cid=${CID} --freq=20"
-
-
-    # Micro-service for odrecorderh264.
-    odrecorderh264:
-        build: .
+            - "/dev/ttyACM0:/dev/ttyACM0"
+            - "/dev/video1:/dev/video0"
         depends_on:
             - odsupercomponent
-            - proxy-camera
+        command: bash -c "sleep 1; /opt/opendlv.scaledcars/bin/miniature/proxy -rm=true --privileged=true --verbose=1 --cid=${CID} --freq=20"
+    # Micro-service for odsimvehicle.
+
+   #Micro-service for lanedtecter scenario.
+    lanedetector:
+        build: .
+        network_mode: host
+        ipc: host
+        user: odv
+        environment:
+        - DISPLAY=$DISPLAY
         volumes:
-            - ~/recordings:/opt/recordings
-        user: odv
-        network_mode: host
-        ipc: host
-        working_dir: "/opt/recordings"
-        command: "/opt/od4/bin/odrecorderh264 --cid=${CID} --freq=20" 
-   # Micro-service for lanefollower scenario.
-    lanefollower:
-        build: .
-        network_mode: host
+        - ./DIT-168:/opt/config
         depends_on:
             - odsupercomponent
-        command: bash -c "sleep 5; /opt/od4/bin/miniature/proxy --verbose=1 --cid=${CID} --freq=20"
-
+        command: bash -c "sleep 5; /opt/opendlv.scaledcars/bin/miniature/lanefollower --verbose=1  --cid=${CID} --freq=20 -e DISPLAY=$DISPLAY"

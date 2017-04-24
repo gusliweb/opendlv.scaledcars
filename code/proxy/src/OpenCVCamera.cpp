@@ -26,21 +26,21 @@
 
 namespace automotive {
     namespace miniature {
+    OpenCVCamera::OpenCVCamera(const string &name, const uint32_t &id, const uint32_t &width, const uint32_t &height, const uint32_t &bpp, const bool &debug, const bool &flipped)
+    : Camera(name, id, width, height, bpp)
+    , m_capture(NULL)
+    , m_image(NULL)
+    , m_debug(debug)
+    , m_flipped(flipped) {
 
-        OpenCVCamera::OpenCVCamera(const string &name, const uint32_t &id, const uint32_t &width, const uint32_t &height, const uint32_t &bpp) :
-            Camera(name, id, width, height, bpp),
-            m_capture(NULL),
-            m_image(NULL) {
-
-            m_capture = cvCaptureFromCAM(id);
-            if (m_capture) {
-                cvSetCaptureProperty(m_capture, CV_CAP_PROP_FRAME_WIDTH, width);
-                cvSetCaptureProperty(m_capture, CV_CAP_PROP_FRAME_HEIGHT, height);
-            }
-            else {
-                cerr << "proxy: Could not open camera '" << name << "' with ID: " << id << endl;
-            }
-        }
+    m_capture = cvCaptureFromCAM(id);
+    if (m_capture) {
+        cvSetCaptureProperty(m_capture, CV_CAP_PROP_FRAME_WIDTH, width);
+        cvSetCaptureProperty(m_capture, CV_CAP_PROP_FRAME_HEIGHT, height);
+    } else {
+        cerr << "[proxy-camera] Could not open camera '" << name << "' with ID: " << id << endl;
+    }
+}
 
         OpenCVCamera::~OpenCVCamera() {
             if (m_capture) {
@@ -80,11 +80,15 @@ namespace automotive {
             bool retVal = false;
 
             if ( (dest != NULL) && (size > 0) && (m_image != NULL) ) {
-                ::memcpy(dest, m_image->imageData, size);
+                 if (m_flipped) {
+            cvFlip(m_image, m_image, -1);
+        }
+        ::memcpy(dest, m_image->imageData, size);
 
-                cvShowImage("WindowShowImage", m_image);
-                cvWaitKey(10);
-
+        if (m_debug) {
+            cvShowImage("[proxy-camera]", m_image);
+            cvWaitKey(10);
+        }
                 retVal = true;
             }
 

@@ -225,7 +225,7 @@ odsimvehicle.LinearBicycleModel.KdynamicBrake=60.0
 #
 # CONFIGURATION FOR LANEFOLLOWER
 #
-lanefollower.camera_id = 0 # select here the proper camera
+lanefollower.camera_id = 2 # select here the proper camera
 lanefollower.debug = 1      # set to 0 to disable any windows and further output
 
 
@@ -235,7 +235,7 @@ lanefollower.debug = 1      # set to 0 to disable any windows and further output
 # CONFIGURATION FOR VCR
 #
 VCR.camera_id = 2 # select here the proper camera
-VCR.debug = 0      # set to 0 to disable any windows and further output
+VCR.debug = 1      # set to 0 to disable any windows and further output
 
 
 ###############################################################################
@@ -277,8 +277,6 @@ egocontroller.LinearBicycleModelNew.maxSpeed=2.0                   # maxium spee
 proxy.debug = 0
 proxy.useRecorder = 0 # 1 = record all captured data directly, 0 otherwise. 
 proxy.recorder.output = file://recs/
-proxy.camera.debug = 0
-proxy.camera.flipped = 1
 proxy.camera.name = WebCam
 proxy.camera.type = OpenCV # OpenCV or UEYE
 proxy.camera.id = 0 # Select here the proper ID for OpenCV
@@ -286,7 +284,7 @@ proxy.camera.width = 640 #752-UEYE, 640-OpenCV
 proxy.camera.height = 480
 proxy.camera.bpp = 3 #3- openCV, 1-UEYE
 
-proxy.Actuator.UseRealSpeed=0
+Proxy.Actuator.UseRealSpeed=0
 proxy.Actuator.SerialPort=/dev/ttyACM0
 
 proxy.Sensor.SerialPort=/dev/ttyUSB0
@@ -341,7 +339,7 @@ driver.MoreStates = 2
 # CONFIGURATION FOR LANEDETECTOR
 #
 lanedetector.camera_id = 2  # select here the proper camera
-lanedetector.debug = 1     # set to 0 to disable any windows and further output
+lanedetector.debug = 1      # set to 0 to disable any windows and further output
 lanedetector.inspect_rec = file://recording.rec # Config for lanedetector-inspection
 # Choose what to inspect, where
 # getContours = 1
